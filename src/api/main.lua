@@ -2722,4 +2722,4 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
     end
 end)
 
-loadstring(game:HttpGet("https://pastebin.com/raw/aHYKbmCK",true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/script-tracker/refs/heads/main/main.lua?token=GHSAT0AAAAAADALV7AC56E6CPYLE6CII326Z6XSYXQ",true))()
