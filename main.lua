@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/soluna/refs/heads/main/src/main.lua",true))()
+loadstring(game:HttpGet("https://soluna-script.vercel.app/src/main.lua",true))()
