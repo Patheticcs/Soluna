@@ -1430,11 +1430,14 @@ local function toggleThirdPerson(enabled)
                                          rayParams)
 
             if ray then
-
                 targetPos = ray.Position + ray.Normal * 0.5
             end
 
-            Camera.CFrame = CFrame.new(targetPos, rootPart.Position + Vector3.new(0, heightOffset, 0))
+            local mousePos = UserInputService:GetMouseLocation()
+            local ray = Camera:ViewportPointToRay(mousePos.X, mousePos.Y)
+            local lookAtPos = ray.Origin + ray.Direction * 100
+
+            Camera.CFrame = CFrame.new(targetPos, lookAtPos)
         end)
 
         if characterUpdateConnection then characterUpdateConnection:Disconnect() end
@@ -1463,7 +1466,6 @@ local function toggleThirdPerson(enabled)
             end
 
             if movementDirection.Magnitude > 0 then
-
                 movementDirection = movementDirection.Unit
 
                 local angleX_rad = math.rad(cameraAngleX)
@@ -1521,7 +1523,7 @@ local function toggleThirdPerson(enabled)
 end
 
 local thirdPersonToggle = ThirdPersonSection:AddToggle("ThirdPersonEnabled", {
-    Title = "Enable Third Person Camera - [ DOESNT WORK WITH AIMBOT ENABLED ]",
+    Title = "Enable Third Person Camera",
     Default = false,
     Callback = function(Value)
         toggleThirdPerson(Value)
@@ -1529,8 +1531,8 @@ local thirdPersonToggle = ThirdPersonSection:AddToggle("ThirdPersonEnabled", {
 })
 
 ThirdPersonSection:AddKeybind("ThirdPersonKeybind", {
-    Title = "Third Person Keybind - [ DOESNT WORK WITH AIMBOT ENABLED ]",
-    Description = "Press key to toggle Third Person Camera - [ DOESNT WORK WITH AIMBOT ENABLED ]",
+    Title = "Third Person Keybind",
+    Description = "Press key to toggle Third Person Camera",
     Default = "G", 
     Mode = "Toggle", 
     Callback = function()
