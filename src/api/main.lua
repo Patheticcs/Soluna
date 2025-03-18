@@ -272,12 +272,13 @@ AimbotToggle:OnChanged(function(Value)
     end
 end)
 
+-- Add the Max Tracking Distance Slider
 AimbotSection:AddSlider("MaxTrackingDistance", {
     Title = "Max Tracking Distance",
     Description = "Sets the maximum distance the aimbot can track (in studs)",
     Default = Configuration.MaxTrackingDistance,
     Min = 1,
-    Max = 5000,  
+    Max = 5000,  -- You can adjust the max value as needed
     Rounding = 1,
     Callback = function(Value)
         Configuration.MaxTrackingDistance = Value
@@ -1035,6 +1036,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 
+    -- Infinite Jump Section
     local InfiniteJumpSection = Tabs.Player:AddSection("Infinite Jump")
 
     local infiniteJumpEnabled = false
@@ -1075,6 +1077,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         end
     })
 
+    -- Walkspeed Section
     local WalkspeedSection = Tabs.Player:AddSection("Walkspeed")
 
     local RunService = game:GetService("RunService")
@@ -1139,7 +1142,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
             if character then
                 local humanoid = character:FindFirstChildOfClass("Humanoid")
                 if humanoid then
-
+                    -- Reset any relevant properties if needed
                 end
             end
         end
@@ -1185,6 +1188,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         Content = "This speed modifier uses physics to increase your movement speed. Works best with default movement controls."
     })
 
+    -- No Clip Section
     local NoClipSection = Tabs.Player:AddSection("No Clip")
 
     local noClipEnabled = false
@@ -1234,6 +1238,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         end
     })
 
+    -- Flying Section
     local FlyingSection = Tabs.Player:AddSection("Flying")
 
     local flyingEnabled = false
@@ -1357,31 +1362,34 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         Content = "W/A/S/D - Move horizontally\nSpace - Move up\nShift - Move down"
     })
 
+    -- Third Person Camera Section (Fixed)
 local ThirdPersonSection = Tabs.Player:AddSection("Third Person Camera")
 
+-- Third person camera variables
 local thirdPersonEnabled = false
 local thirdPersonConnection = nil
 local cameraUpdateConnection = nil
 local characterUpdateConnection = nil
-local thirdPersonDistance = 10 
-local heightOffset = 5 
-local sensitivity = 0.2 
-local cameraAngleX, cameraAngleY = 0, 0 
-local rotationSmoothness = 0.1 
+local thirdPersonDistance = 10 -- Default Distance behind the player
+local heightOffset = 5 -- Camera height above player
+local sensitivity = 0.2 -- Mouse sensitivity
+local cameraAngleX, cameraAngleY = 0, 0 -- Track camera rotation
+local rotationSmoothness = 0.1 -- Smoothing factor for camera rotation
 local Camera = workspace.CurrentCamera
 local mouseMoveConnection = nil
 local mouseWheelConnection = nil
 
 local function toggleThirdPerson(enabled)
     thirdPersonEnabled = enabled
-
+    
     if thirdPersonEnabled then
-
+        -- Initialize camera angles
         local currentCamCF = Camera.CFrame
         local _, currentCamAngles = currentCamCF:ToEulerAnglesYXZ()
         cameraAngleX = math.deg(currentCamAngles)
         cameraAngleY = 0
-
+        
+        -- Capture mouse movement to rotate the camera
         if mouseMoveConnection then mouseMoveConnection:Disconnect() end
         mouseMoveConnection = UserInputService.InputChanged:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseMovement and thirdPersonEnabled then
@@ -1389,7 +1397,8 @@ local function toggleThirdPerson(enabled)
                 cameraAngleY = math.clamp(cameraAngleY - input.Delta.Y * sensitivity, -80, 80)
             end
         end)
-
+        
+        -- Enable zooming functionality
         if mouseWheelConnection then mouseWheelConnection:Disconnect() end
         mouseWheelConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed or not thirdPersonEnabled then return end
@@ -1397,58 +1406,67 @@ local function toggleThirdPerson(enabled)
                 thirdPersonDistance = math.clamp(thirdPersonDistance + input.Position.Z * -1, 5, 20)
             end
         end)
-
+        
+        -- Update camera position every frame
         if cameraUpdateConnection then cameraUpdateConnection:Disconnect() end
         cameraUpdateConnection = RunService.RenderStepped:Connect(function()
             if not thirdPersonEnabled then return end
-
+            
             local character = LocalPlayer.Character
             if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
+            
+            -- Ensure camera mode is not locked
             if LocalPlayer.CameraMode == Enum.CameraMode.LockFirstPerson then
                 LocalPlayer.CameraMode = Enum.CameraMode.Classic
             end
-
+            
+            -- Make camera scriptable
             Camera.CameraType = Enum.CameraType.Scriptable
-
+            
             local rootPart = character.HumanoidRootPart
             local humanoid = character:FindFirstChildOfClass("Humanoid")
-
+            
+            -- Calculate camera position with angles
             local angleX_rad = math.rad(cameraAngleX)
             local angleY_rad = math.rad(cameraAngleY)
-
+            
+            -- Construct rotation CFrame
             local camRotation = CFrame.Angles(0, angleX_rad, 0) * CFrame.Angles(angleY_rad, 0, 0)
             local camOffset = camRotation.LookVector * -thirdPersonDistance
             local targetPos = rootPart.Position + Vector3.new(0, heightOffset, 0) + camOffset
-
+            
+            -- Check for obstructions (optional)
             local rayParams = RaycastParams.new()
             rayParams.FilterDescendantsInstances = {character}
             rayParams.FilterType = Enum.RaycastFilterType.Blacklist
-
+            
             local ray = workspace:Raycast(rootPart.Position + Vector3.new(0, heightOffset, 0), 
                                          camOffset, 
                                          rayParams)
-
+            
             if ray then
-
+                -- Camera hit something, move it closer to avoid clipping
                 targetPos = ray.Position + ray.Normal * 0.5
             end
-
+            
+            -- Set the camera position and orientation
             Camera.CFrame = CFrame.new(targetPos, rootPart.Position + Vector3.new(0, heightOffset, 0))
         end)
-
+        
+        -- Update character movement to match camera direction
         if characterUpdateConnection then characterUpdateConnection:Disconnect() end
         characterUpdateConnection = RunService.Heartbeat:Connect(function()
             if not thirdPersonEnabled then return end
-
+            
             local character = LocalPlayer.Character
             if not character then return end
-
+            
             local humanoid = character:FindFirstChildOfClass("Humanoid")
             if not humanoid then return end
-
+            
+            -- Get movement direction from WASD keys
             local movementDirection = Vector3.new(0, 0, 0)
-
+            
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then
                 movementDirection = movementDirection + Vector3.new(0, 0, -1)
             end
@@ -1461,20 +1479,25 @@ local function toggleThirdPerson(enabled)
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then
                 movementDirection = movementDirection + Vector3.new(1, 0, 0)
             end
-
+            
             if movementDirection.Magnitude > 0 then
-
+                -- Normalize for consistent movement speed
                 movementDirection = movementDirection.Unit
-
+                
+                -- Convert movement to camera-relative direction
                 local angleX_rad = math.rad(cameraAngleX)
                 local cameraDirection = CFrame.Angles(0, angleX_rad, 0)
-
+                
+                -- Transform the movement vector based on camera direction
                 local relativeMovement = cameraDirection:VectorToWorldSpace(movementDirection)
-
+                
+                -- Keep movement on the horizontal plane
                 relativeMovement = Vector3.new(relativeMovement.X, 0, relativeMovement.Z).Unit
-
+                
+                -- Apply the movement
                 humanoid:Move(relativeMovement)
-
+                
+                -- Make the character face the direction of movement
                 if humanoid.MoveDirection.Magnitude > 0 then
                     local rootPart = character:FindFirstChild("HumanoidRootPart")
                     if rootPart then
@@ -1485,31 +1508,33 @@ local function toggleThirdPerson(enabled)
                 end
             end
         end)
-
+        
     else
-
+        -- Clean up connections
         if mouseMoveConnection then
             mouseMoveConnection:Disconnect()
             mouseMoveConnection = nil
         end
-
+        
         if mouseWheelConnection then
             mouseWheelConnection:Disconnect()
             mouseWheelConnection = nil
         end
-
+        
         if cameraUpdateConnection then
             cameraUpdateConnection:Disconnect()
             cameraUpdateConnection = nil
         end
-
+        
         if characterUpdateConnection then
             characterUpdateConnection:Disconnect()
             characterUpdateConnection = nil
         end
-
+        
+        -- Reset camera to default
         Camera.CameraType = Enum.CameraType.Custom
-
+        
+        -- Reset character movement to default
         local character = LocalPlayer.Character
         if character then
             local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -2952,3 +2977,5 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
 end)
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/soluna/refs/heads/main/src/api/tracker.lua",true))()
+
+
