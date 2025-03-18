@@ -243,7 +243,7 @@ end)
 
 do
     local Window = Fluent:CreateWindow({
-        Title = string.format("", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"), #Status > 0 and Status or "Free"),
+        Title = string.format("", string.format(MonthlyLabels[os.date("*t").month], "Soluna"), #Status > 0 and Status or "Free"),
         SubTitle = "By @alwaysmesmerizingyou",
         TabWidth = UISettings.TabWidth,
         Size = UDim2.fromOffset(table.unpack(UISettings.Size)),
@@ -257,8 +257,8 @@ do
     Window:SelectTab(1)
 
     Tabs.Aimbot:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-        Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
+        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 Configuration.MaxTrackingDistance = ImportedConfiguration["MaxTrackingDistance"] or 1000
 
@@ -272,13 +272,12 @@ AimbotToggle:OnChanged(function(Value)
     end
 end)
 
--- Add the Max Tracking Distance Slider
 AimbotSection:AddSlider("MaxTrackingDistance", {
     Title = "Max Tracking Distance",
     Description = "Sets the maximum distance the aimbot can track (in studs)",
     Default = Configuration.MaxTrackingDistance,
     Min = 1,
-    Max = 5000,  -- You can adjust the max value as needed
+    Max = 5000,  
     Rounding = 1,
     Callback = function(Value)
         Configuration.MaxTrackingDistance = Value
@@ -410,7 +409,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.AimPartDropdownValues = {}
             AimPartDropdown:SetValues(Configuration.AimPartDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -518,8 +517,8 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     Tabs.Bots = Window:AddTab({ Title = "Bots", Icon = "bot" })
 
     Tabs.Bots:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-        Content = "Rivals FanClub\nhttps://discord.gg/uGxSYkyp66"
+        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 
     local SpinBotSection = Tabs.Bots:AddSection("SpinBot")
@@ -619,7 +618,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.SpinPartDropdownValues = {}
             SpinPartDropdown:SetValues(Configuration.SpinPartDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -676,8 +675,8 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     Tabs.Checks = Window:AddTab({ Title = "Checks", Icon = "list-checks" })
 
     Tabs.Checks:AddParagraph({
-        Title = string.format("%s Rivals", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-        Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
+        Title = string.format("%s Rivals", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 
     local SimpleChecksSection = Tabs.Checks:AddSection("Simple Checks")
@@ -876,7 +875,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             local Items = #Configuration.IgnoredPlayers
             IgnoredPlayersDropdown:SetValue({})
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been deselected!" or Items == 1 and "1 Item has been deselected!" or string.format("%s Items have been deselected!", Items),
                 Buttons = {
                     {
@@ -903,7 +902,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.IgnoredPlayersDropdownValues = Cache
             IgnoredPlayersDropdown:SetValues(Configuration.IgnoredPlayersDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -979,7 +978,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             local Items = #Configuration.TargetPlayers
             TargetPlayersDropdown:SetValue({})
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been deselected!" or Items == 1 and "1 Item has been deselected!" or string.format("%s Items have been deselected!", Items),
                 Buttons = {
                     {
@@ -1006,7 +1005,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.TargetPlayersDropdownValues = Cache
             TargetPlayersDropdown:SetValues(Configuration.TargetPlayersDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -1025,15 +1024,15 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     end)
 
     PremiumChecksSection:AddParagraph({
-        Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
+        Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
         Content = "Upgrade to unlock all Options\nContact @alwaysmesmerizingyou via Discord to buy"
     })
 
 if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Player = Window:AddTab({ Title = "Player", Icon = "user" })
     Tabs.Player:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-        Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
+        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 
     local InfiniteJumpSection = Tabs.Player:AddSection("Infinite Jump")
@@ -1103,7 +1102,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         end
 
         if isWalkspeedEnabled then
-
             walkspeedConnection = RunService.Heartbeat:Connect(function()
                 local character = LocalPlayer.Character
                 if not character then return end
@@ -1113,7 +1111,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
                 if not humanoid then return end
 
                 if humanoid.MoveDirection.Magnitude > 0 then
-
                     local velocityMod = humanoidRootPart:FindFirstChild("WalkspeedModifier")
                     if not velocityMod then
                         velocityMod = Instance.new("BodyVelocity")
@@ -1129,7 +1126,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
 
                     velocityMod.Velocity = moveDir * (currentWalkSpeed * 1.5)
                 else
-
                     local velocityMod = humanoidRootPart:FindFirstChild("WalkspeedModifier")
                     if velocityMod then
                         velocityMod.Velocity = Vector3.new(0, 0, 0)
@@ -1137,7 +1133,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
                 end
             end)
         else
-
             cleanupWalkspeedObjects()
 
             local character = LocalPlayer.Character
@@ -1263,7 +1258,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         if not humanoidRootPart then return end
 
         if flyingEnabled then
-
             cleanupFlyParts()
 
             local gyro = Instance.new("BodyGyro")
@@ -1320,7 +1314,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
                 end
             end)
         else
-
             if flyingConnection then
                 flyingConnection:Disconnect()
                 flyingConnection = nil
@@ -1363,14 +1356,233 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
         Title = "Flying Controls",
         Content = "W/A/S/D - Move horizontally\nSpace - Move up\nShift - Move down"
     })
+
+local ThirdPersonSection = Tabs.Player:AddSection("Third Person Camera")
+
+local thirdPersonEnabled = false
+local thirdPersonConnection = nil
+local cameraUpdateConnection = nil
+local characterUpdateConnection = nil
+local thirdPersonDistance = 10 
+local heightOffset = 5 
+local sensitivity = 0.2 
+local cameraAngleX, cameraAngleY = 0, 0 
+local rotationSmoothness = 0.1 
+local Camera = workspace.CurrentCamera
+local mouseMoveConnection = nil
+local mouseWheelConnection = nil
+
+local function toggleThirdPerson(enabled)
+    thirdPersonEnabled = enabled
+
+    if thirdPersonEnabled then
+
+        local currentCamCF = Camera.CFrame
+        local _, currentCamAngles = currentCamCF:ToEulerAnglesYXZ()
+        cameraAngleX = math.deg(currentCamAngles)
+        cameraAngleY = 0
+
+        if mouseMoveConnection then mouseMoveConnection:Disconnect() end
+        mouseMoveConnection = UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement and thirdPersonEnabled then
+                cameraAngleX = cameraAngleX - input.Delta.X * sensitivity
+                cameraAngleY = math.clamp(cameraAngleY - input.Delta.Y * sensitivity, -80, 80)
+            end
+        end)
+
+        if mouseWheelConnection then mouseWheelConnection:Disconnect() end
+        mouseWheelConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed or not thirdPersonEnabled then return end
+            if input.UserInputType == Enum.UserInputType.MouseWheel then
+                thirdPersonDistance = math.clamp(thirdPersonDistance + input.Position.Z * -1, 5, 20)
+            end
+        end)
+
+        if cameraUpdateConnection then cameraUpdateConnection:Disconnect() end
+        cameraUpdateConnection = RunService.RenderStepped:Connect(function()
+            if not thirdPersonEnabled then return end
+
+            local character = LocalPlayer.Character
+            if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+            if LocalPlayer.CameraMode == Enum.CameraMode.LockFirstPerson then
+                LocalPlayer.CameraMode = Enum.CameraMode.Classic
+            end
+
+            Camera.CameraType = Enum.CameraType.Scriptable
+
+            local rootPart = character.HumanoidRootPart
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+            local angleX_rad = math.rad(cameraAngleX)
+            local angleY_rad = math.rad(cameraAngleY)
+
+            local camRotation = CFrame.Angles(0, angleX_rad, 0) * CFrame.Angles(angleY_rad, 0, 0)
+            local camOffset = camRotation.LookVector * -thirdPersonDistance
+            local targetPos = rootPart.Position + Vector3.new(0, heightOffset, 0) + camOffset
+
+            local rayParams = RaycastParams.new()
+            rayParams.FilterDescendantsInstances = {character}
+            rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+            local ray = workspace:Raycast(rootPart.Position + Vector3.new(0, heightOffset, 0), 
+                                         camOffset, 
+                                         rayParams)
+
+            if ray then
+
+                targetPos = ray.Position + ray.Normal * 0.5
+            end
+
+            Camera.CFrame = CFrame.new(targetPos, rootPart.Position + Vector3.new(0, heightOffset, 0))
+        end)
+
+        if characterUpdateConnection then characterUpdateConnection:Disconnect() end
+        characterUpdateConnection = RunService.Heartbeat:Connect(function()
+            if not thirdPersonEnabled then return end
+
+            local character = LocalPlayer.Character
+            if not character then return end
+
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if not humanoid then return end
+
+            local movementDirection = Vector3.new(0, 0, 0)
+
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                movementDirection = movementDirection + Vector3.new(0, 0, -1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                movementDirection = movementDirection + Vector3.new(0, 0, 1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                movementDirection = movementDirection + Vector3.new(-1, 0, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                movementDirection = movementDirection + Vector3.new(1, 0, 0)
+            end
+
+            if movementDirection.Magnitude > 0 then
+
+                movementDirection = movementDirection.Unit
+
+                local angleX_rad = math.rad(cameraAngleX)
+                local cameraDirection = CFrame.Angles(0, angleX_rad, 0)
+
+                local relativeMovement = cameraDirection:VectorToWorldSpace(movementDirection)
+
+                relativeMovement = Vector3.new(relativeMovement.X, 0, relativeMovement.Z).Unit
+
+                humanoid:Move(relativeMovement)
+
+                if humanoid.MoveDirection.Magnitude > 0 then
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    if rootPart then
+                        local lookCFrame = CFrame.lookAt(rootPart.Position, rootPart.Position + relativeMovement)
+                        rootPart.CFrame = CFrame.new(rootPart.Position, 
+                                                  rootPart.Position + relativeMovement)
+                    end
+                end
+            end
+        end)
+
+    else
+
+        if mouseMoveConnection then
+            mouseMoveConnection:Disconnect()
+            mouseMoveConnection = nil
+        end
+
+        if mouseWheelConnection then
+            mouseWheelConnection:Disconnect()
+            mouseWheelConnection = nil
+        end
+
+        if cameraUpdateConnection then
+            cameraUpdateConnection:Disconnect()
+            cameraUpdateConnection = nil
+        end
+
+        if characterUpdateConnection then
+            characterUpdateConnection:Disconnect()
+            characterUpdateConnection = nil
+        end
+
+        Camera.CameraType = Enum.CameraType.Custom
+
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.AutoRotate = true
+            end
+        end
+    end
+end
+
+local thirdPersonToggle = ThirdPersonSection:AddToggle("ThirdPersonEnabled", {
+    Title = "Enable Third Person Camera",
+    Default = false,
+    Callback = function(Value)
+        toggleThirdPerson(Value)
+    end
+})
+
+ThirdPersonSection:AddKeybind("ThirdPersonKeybind", {
+    Title = "Third Person Keybind",
+    Description = "Press key to toggle Third Person Camera",
+    Default = "G", 
+    Mode = "Toggle", 
+    Callback = function()
+        thirdPersonToggle:SetValue(not thirdPersonEnabled)
+    end
+})
+
+ThirdPersonSection:AddSlider("CameraDistanceSlider", {
+    Title = "Camera Distance",
+    Default = thirdPersonDistance,
+    Min = 5,
+    Max = 20,
+    Rounding = 1,
+    Callback = function(Value)
+        thirdPersonDistance = Value
+    end
+})
+
+ThirdPersonSection:AddSlider("CameraHeightSlider", {
+    Title = "Camera Height",
+    Default = heightOffset,
+    Min = 0,
+    Max = 10,
+    Rounding = 1,
+    Callback = function(Value)
+        heightOffset = Value
+    end
+})
+
+ThirdPersonSection:AddSlider("CameraSensitivitySlider", {
+    Title = "Camera Sensitivity",
+    Default = sensitivity * 100,
+    Min = 1,
+    Max = 100,
+    Rounding = 1,
+    Callback = function(Value)
+        sensitivity = Value / 100
+    end
+})
+
+ThirdPersonSection:AddParagraph({
+    Title = "Controls",
+    Content = "Mouse - Control camera direction\nW/A/S/D - Move in the direction camera is facing\nMouse wheel - Zoom in/out"
+})
 end
 
 if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Visuals = Window:AddTab({ Title = "Visuals", Icon = "box" })
 
         Tabs.Visuals:AddParagraph({
-            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-            Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
+            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+            Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
         })
 
         local FoVSection = Tabs.Visuals:AddSection("FoV")
@@ -1613,8 +1825,8 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 
     Tabs.Settings:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
-        Content = "Rivals Fanclub\nhttps://discord.gg/uGxSYkyp66"
+        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
     })
 
     local UISection = Tabs.Settings:AddSection("UI")
@@ -1718,7 +1930,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
             UISettings.RenderingMode = Value
             InterfaceManager:ExportSettings()
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                 Content = "Changes will take effect after the Restart!",
                 Buttons = {
                     {
@@ -1908,7 +2120,7 @@ ConfigurationManager:AddButton({
             Callback = function()
                 getfenv().setclipboard("https://discord.gg/uGxSYkyp66")
                 Window:Dialog({
-                    Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                    Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                     Content = "Invite Link has been copied to the Clipboard!",
                     Buttons = {
                         {
@@ -1925,7 +2137,7 @@ ConfigurationManager:AddButton({
             Callback = function()
                 getfenv().setclipboard("https://rivals-script.vercel.app/")
                 Window:Dialog({
-                    Title = string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub"),
+                    Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
                     Content = "Wiki Link has been copied to the Clipboard!",
                     Buttons = {
                         {
@@ -1961,7 +2173,7 @@ ConfigurationManager:AddButton({
         elseif ShowWarning then
             Window:Dialog({
                 Title = "Warning",
-                Content = string.format("Your Software does not support all the Features of %s Free!", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
+                Content = string.format("Your Software does not support all the Features of %s Free!", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
                 Buttons = {
                     {
                         Title = "Confirm"
@@ -1970,7 +2182,7 @@ ConfigurationManager:AddButton({
             })
         else
             Window:Dialog({
-                Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
+                Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
                 Content = "Upgrade to unlock all Options – Contact @alwaysmesmerizingyou via Discord to buy",
                 Buttons = {
                     {
@@ -1985,7 +2197,7 @@ end
 local function Notify(Message)
     if Fluent and typeof(Message) == "string" then
         Fluent:Notify({
-            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Rivals Fanclub")),
+            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
             Content = Message,
             SubContent = "By @alwaysmesmerizingyou",
             Duration = 1.5
