@@ -73,8 +73,14 @@
 <body>
 
 <div class="container">
-    <pre class="script">loadstring(game:HttpGet("https://soluna-script.vercel.app/v1.lua", true))()</pre>
-    <a href="/" class="link" target="_blank">New Version</a>
+    <!-- Audio element to play music -->
+    <audio autoplay>
+        <source src="https://github.com/Patheticcs/Soluna/raw/refs/heads/main/audios/background.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <pre class="script">loadstring(game:HttpGet("https://soluna-script.vercel.app/main.lua", true))()</pre>
+    <a href="/v1" class="link">New Version</a>
 </div>
 
 </body>
