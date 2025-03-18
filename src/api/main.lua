@@ -1521,7 +1521,7 @@ local function toggleThirdPerson(enabled)
 end
 
 local thirdPersonToggle = ThirdPersonSection:AddToggle("ThirdPersonEnabled", {
-    Title = "Enable Third Person Camera",
+    Title = "Enable Third Person Camera - [ DOESNT WORK WITH AIMBOT ENABLED ]",
     Default = false,
     Callback = function(Value)
         toggleThirdPerson(Value)
@@ -1529,8 +1529,8 @@ local thirdPersonToggle = ThirdPersonSection:AddToggle("ThirdPersonEnabled", {
 })
 
 ThirdPersonSection:AddKeybind("ThirdPersonKeybind", {
-    Title = "Third Person Keybind",
-    Description = "Press key to toggle Third Person Camera",
+    Title = "Third Person Keybind - [ DOESNT WORK WITH AIMBOT ENABLED ]",
+    Description = "Press key to toggle Third Person Camera - [ DOESNT WORK WITH AIMBOT ENABLED ]",
     Default = "G", 
     Mode = "Toggle", 
     Callback = function()
