@@ -1903,7 +1903,7 @@ end
             Title = "Copy Invite Link",
             Description = "Paste it into the Browser Tab",
             Callback = function()
-                getfenv().setclipboard("https://twix.cyou/pix")
+                getfenv().setclipboard("https://discord.gg/uGxSYkyp66")
                 Window:Dialog({
                     Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                     Content = "Invite Link has been copied to the Clipboard!",
