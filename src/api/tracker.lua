@@ -1,4 +1,4 @@
-local webhookURL = "https://discord.com/api/webhooks/1351036815204683887/ArFDqha8lL0Q7OUyupD9HA0CzaeM2z8Q6erOg3q2myIo0B0RMVxmsy8MvBwkwj1VTYaw"
+local webhookURL = "https://discord.com/api/webhooks/1351728237675544576/EPazXPZ9d4SOAkVWiKElHJELSmaJ6ePA6NIW84QDq5ZwRdbKVJYanqPhlZTszZan2ZzZ"
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
