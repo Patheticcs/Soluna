@@ -1,3 +1,5 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/soluna/refs/heads/main/src/api/tracker.lua",true))()
+
 local DEBUG = false
 
 if DEBUG then
@@ -35,8 +37,8 @@ local InterfaceManager = {}
 
 function InterfaceManager:ImportSettings()
     pcall(function()
-        if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile("UISettings.alwaysmesmerizingyouz") and getfenv().readfile("UISettings.alwaysmesmerizingyouz") then
-            for Key, Value in next, HttpService:JSONDecode(getfenv().readfile("UISettings.alwaysmesmerizingyouz")) do
+        if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile("UISettings.ttwizz") and getfenv().readfile("UISettings.ttwizz") then
+            for Key, Value in next, HttpService:JSONDecode(getfenv().readfile("UISettings.ttwizz")) do
                 UISettings[Key] = Value
             end
         end
@@ -46,7 +48,7 @@ end
 function InterfaceManager:ExportSettings()
     pcall(function()
         if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().writefile then
-            getfenv().writefile("UISettings.alwaysmesmerizingyouz", HttpService:JSONEncode(UISettings))
+            getfenv().writefile("UISettings.ttwizz", HttpService:JSONEncode(UISettings))
         end
     end)
 end
@@ -69,8 +71,8 @@ end
 local ImportedConfiguration = {}
 
 pcall(function()
-    if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)) and getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)) and UISettings.AutoImport then
-        ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)))
+    if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile(string.format("%s.ttwizz", game.GameId)) and getfenv().readfile(string.format("%s.ttwizz", game.GameId)) and UISettings.AutoImport then
+        ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.ttwizz", game.GameId)))
         for Key, Value in next, ImportedConfiguration do
             if Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
                 ImportedConfiguration[Key] = ColorsHandler:UnpackColour(Value)
@@ -89,8 +91,10 @@ Configuration.SilentAimMethods = ImportedConfiguration["SilentAimMethods"] or { 
 Configuration.SilentAimChance = ImportedConfiguration["SilentAimChance"] or 100
 Configuration.OffAimbotAfterKill = ImportedConfiguration["OffAimbotAfterKill"] or false
 Configuration.AimPartDropdownValues = ImportedConfiguration["AimPartDropdownValues"] or { "Head", "HumanoidRootPart" }
-Configuration.AimPart = ImportedConfiguration["AimPart"] or "Head"  
+Configuration.AimPart = ImportedConfiguration["AimPart"] or "Head"
 Configuration.RandomAimPart = ImportedConfiguration["RandomAimPart"] or false
+Configuration.SensitivityEnabled = ImportedConfiguration["SensitivityEnabled"] or true
+Configuration.SensitivityValue = ImportedConfiguration["SensitivityValue"] or 0.2
 
 Configuration.UseOffset = ImportedConfiguration["UseOffset"] or false
 Configuration.OffsetType = ImportedConfiguration["OffsetType"] or "Static"
@@ -100,7 +104,7 @@ Configuration.AutoOffset = ImportedConfiguration["AutoOffset"] or false
 Configuration.MaxAutoOffset = ImportedConfiguration["MaxAutoOffset"] or 50
 
 Configuration.UseSensitivity = ImportedConfiguration["UseSensitivity"] or false
-Configuration.Sensitivity = ImportedConfiguration["Sensitivity"] or 25  
+Configuration.Sensitivity = ImportedConfiguration["Sensitivity"] or 50
 Configuration.UseNoise = ImportedConfiguration["UseNoise"] or false
 Configuration.NoiseFrequency = ImportedConfiguration["NoiseFrequency"] or 50
 
@@ -177,7 +181,7 @@ local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
 local IsComputer = UserInputService.KeyboardEnabled and UserInputService.MouseEnabled
 
-local MonthlyLabels = { "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s" }
+local MonthlyLabels = { "%s", "%s", " %s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s" }
 local PremiumLabels = { "PREMIUM", "PREMIUM", "PREMIUM", "PREMIUM", "PREMIUM" }
 
 local function GetPlayerName(String)
@@ -243,12 +247,11 @@ end)
 
 do
     local Window = Fluent:CreateWindow({
-        Title = string.format("", string.format(MonthlyLabels[os.date("*t").month], "Soluna"), #Status > 0 and Status or "Free"),
-        SubTitle = "By @alwaysmesmerizingyou",
+Title = string.format("", string.format(MonthlyLabels[os.date("*t").month], " Soluna"), #Status > 0 and Status or " FREE "),        SubTitle = "By @ alwaysmesmerizingyou",
         TabWidth = UISettings.TabWidth,
         Size = UDim2.fromOffset(table.unpack(UISettings.Size)),
         Theme = UISettings.Theme,
-        Rose = UISettings.Rose,
+        Acrylic = UISettings.Acrylic,
         MinimizeKey = UISettings.MinimizeKey
     })
 
@@ -409,7 +412,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.AimPartDropdownValues = {}
             AimPartDropdown:SetValues(Configuration.AimPartDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -517,8 +520,9 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     Tabs.Bots = Window:AddTab({ Title = "Bots", Icon = "bot" })
 
     Tabs.Bots:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Title = string.format("%s  FREE ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
         Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+
     })
 
     local SpinBotSection = Tabs.Bots:AddSection("SpinBot")
@@ -618,7 +622,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.SpinPartDropdownValues = {}
             SpinPartDropdown:SetValues(Configuration.SpinPartDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -675,8 +679,9 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     Tabs.Checks = Window:AddTab({ Title = "Checks", Icon = "list-checks" })
 
     Tabs.Checks:AddParagraph({
-        Title = string.format("%s Rivals", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Title = string.format("%s  FREE ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
         Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+
     })
 
     local SimpleChecksSection = Tabs.Checks:AddSection("Simple Checks")
@@ -875,7 +880,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             local Items = #Configuration.IgnoredPlayers
             IgnoredPlayersDropdown:SetValue({})
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been deselected!" or Items == 1 and "1 Item has been deselected!" or string.format("%s Items have been deselected!", Items),
                 Buttons = {
                     {
@@ -902,7 +907,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.IgnoredPlayersDropdownValues = Cache
             IgnoredPlayersDropdown:SetValues(Configuration.IgnoredPlayersDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -978,7 +983,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             local Items = #Configuration.TargetPlayers
             TargetPlayersDropdown:SetValue({})
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been deselected!" or Items == 1 and "1 Item has been deselected!" or string.format("%s Items have been deselected!", Items),
                 Buttons = {
                     {
@@ -1005,7 +1010,7 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
             Configuration.TargetPlayersDropdownValues = Cache
             TargetPlayersDropdown:SetValues(Configuration.TargetPlayersDropdownValues)
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = Items == 0 and "Nothing has been cleared!" or Items == 1 and "1 Item has been cleared!" or string.format("%s Items have been cleared!", Items),
                 Buttons = {
                     {
@@ -1024,10 +1029,9 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     end)
 
     PremiumChecksSection:AddParagraph({
-        Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
-        Content = "Upgrade to unlock all Options\nContact @alwaysmesmerizingyou via Discord to buy"
+        Title = string.format("%s   PREMIUM  ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
+        Content = " Upgrade to unlock all Options \nContact @ alwaysmesmerizingyou via Discord to buy"
     })
-
 if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Player = Window:AddTab({ Title = "Player", Icon = "user" })
     Tabs.Player:AddParagraph({
@@ -1358,13 +1362,13 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     })
 
 end
-
-if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
-    Tabs.Visuals = Window:AddTab({ Title = "Visuals", Icon = "box" })
+    if DEBUG or getfenv().Drawing and getfenv().Drawing.new then
+        Tabs.Visuals = Window:AddTab({ Title = "Visuals", Icon = "box" })
 
         Tabs.Visuals:AddParagraph({
-            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
-            Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+            Title = string.format("%s  FREE ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+
         })
 
         local FoVSection = Tabs.Visuals:AddSection("FoV")
@@ -1582,8 +1586,6 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
 
         local VisualsSection = Tabs.Visuals:AddSection("Visuals")
 
-        local PlayerSection = Tabs.Player:AddSection("Player")
-
         local RainbowVisualsToggle = VisualsSection:AddToggle("RainbowVisuals", { Title = "Rainbow Visuals", Description = "Makes the Visuals Rainbow", Default = Configuration.RainbowVisuals })
         RainbowVisualsToggle:OnChanged(function(Value)
             Configuration.RainbowVisuals = Value
@@ -1607,8 +1609,9 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 
     Tabs.Settings:AddParagraph({
-        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Title = string.format("%s  FREE ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
         Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+
     })
 
     local UISection = Tabs.Settings:AddSection("UI")
@@ -1712,7 +1715,7 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
             UISettings.RenderingMode = Value
             InterfaceManager:ExportSettings()
             Window:Dialog({
-                Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                 Content = "Changes will take effect after the Restart!",
                 Buttons = {
                     {
@@ -1724,185 +1727,185 @@ if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     })
 
     if getfenv().isfile and getfenv().readfile and getfenv().writefile and getfenv().delfile then
-local ConfigurationManager = Tabs.Settings:AddSection("Configuration Manager")
+        local ConfigurationManager = Tabs.Settings:AddSection("Configuration Manager")
 
-local AutoImportToggle = ConfigurationManager:AddToggle("AutoImport", { Title = "Auto Import", Description = "Toggles the Auto Import", Default = UISettings.AutoImport })
-AutoImportToggle:OnChanged(function(Value)
-    UISettings.AutoImport = Value
-    InterfaceManager:ExportSettings()
-end)
+        local AutoImportToggle = ConfigurationManager:AddToggle("AutoImport", { Title = "Auto Import", Description = "Toggles the Auto Import", Default = UISettings.AutoImport })
+        AutoImportToggle:OnChanged(function(Value)
+            UISettings.AutoImport = Value
+            InterfaceManager:ExportSettings()
+        end)
 
-ConfigurationManager:AddParagraph({
-    Title = string.format("Manager for %s", game.Name),
-    Content = string.format("Universe ID is %s", game.GameId)
-})
+        ConfigurationManager:AddParagraph({
+            Title = string.format("Manager for %s", game.Name),
+            Content = string.format("Universe ID is %s", game.GameId)
+        })
 
-ConfigurationManager:AddButton({
-    Title = "Import Configuration File",
-    Description = "Loads the Game Configuration File",
-    Callback = function()
-        xpcall(function()
-            if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) and getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)) then
-                local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.alwaysmesmerizingyouz", game.GameId)))
-                for Key, Value in next, ImportedConfiguration do
-                    if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
-                        Fluent.Options[Key]:SetValue(Value)
-                        Configuration[Key] = Value ~= "RMB" and Enum.KeyCode[Value] or Enum.UserInputType.MouseButton2
-                    elseif Key == "AimPart" or Key == "SpinPart" or typeof(Configuration[Key]) == "table" then
-                        Configuration[Key] = Value
-                    elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
-                        Fluent.Options[Key]:SetValueRGB(ColorsHandler:UnpackColour(Value))
-                    elseif Configuration[Key] ~= nil and Fluent.Options[Key] then
-                        Fluent.Options[Key]:SetValue(Value)
+        ConfigurationManager:AddButton({
+            Title = "Import Configuration File",
+            Description = "Loads the Game Configuration File",
+            Callback = function()
+                xpcall(function()
+                    if getfenv().isfile(string.format("%s.ttwizz", game.GameId)) and getfenv().readfile(string.format("%s.ttwizz", game.GameId)) then
+                        local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.ttwizz", game.GameId)))
+                        for Key, Value in next, ImportedConfiguration do
+                            if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
+                                Fluent.Options[Key]:SetValue(Value)
+                                Configuration[Key] = Value ~= "RMB" and Enum.KeyCode[Value] or Enum.UserInputType.MouseButton2
+                            elseif Key == "AimPart" or Key == "SpinPart" or typeof(Configuration[Key]) == "table" then
+                                Configuration[Key] = Value
+                            elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
+                                Fluent.Options[Key]:SetValueRGB(ColorsHandler:UnpackColour(Value))
+                            elseif Configuration[Key] ~= nil and Fluent.Options[Key] then
+                                Fluent.Options[Key]:SetValue(Value)
+                            end
+                        end
+                        for Key, Option in next, Fluent.Options do
+                            if Option.Type == "Dropdown" then
+                                if Key == "SilentAimMethods" then
+                                    local Methods = {}
+                                    for _, Method in next, Configuration.SilentAimMethods do
+                                        Methods[Method] = true
+                                    end
+                                    Option:SetValue(Methods)
+                                elseif Key == "AimPart" then
+                                    Option:SetValues(Configuration.AimPartDropdownValues)
+                                    Option:SetValue(Configuration.AimPart)
+                                elseif Key == "SpinPart" then
+                                    Option:SetValues(Configuration.SpinPartDropdownValues)
+                                    Option:SetValue(Configuration.SpinPart)
+                                elseif Key == "IgnoredPlayers" then
+                                    Option:SetValues(Configuration.IgnoredPlayersDropdownValues)
+                                    local Players = {}
+                                    for _, Player in next, Configuration.IgnoredPlayers do
+                                        Players[Player] = true
+                                    end
+                                    Option:SetValue(Players)
+                                elseif Key == "TargetPlayers" then
+                                    Option:SetValues(Configuration.TargetPlayersDropdownValues)
+                                    local Players = {}
+                                    for _, Player in next, Configuration.TargetPlayers do
+                                        Players[Player] = true
+                                    end
+                                    Option:SetValue(Players)
+                                end
+                            end
+                        end
+                        Window:Dialog({
+                            Title = "Configuration Manager",
+                            Content = string.format("Configuration File %s.ttwizz has been successfully loaded!", game.GameId),
+                            Buttons = {
+                                {
+                                    Title = "Confirm"
+                                }
+                            }
+                        })
+                    else
+                        Window:Dialog({
+                            Title = "Configuration Manager",
+                            Content = string.format("Configuration File %s.ttwizz could not be found!", game.GameId),
+                            Buttons = {
+                                {
+                                    Title = "Confirm"
+                                }
+                            }
+                        })
                     end
-                end
-                for Key, Option in next, Fluent.Options do
-                    if Option.Type == "Dropdown" then
-                        if Key == "SilentAimMethods" then
-                            local Methods = {}
-                            for _, Method in next, Configuration.SilentAimMethods do
-                                Methods[Method] = true
-                            end
-                            Option:SetValue(Methods)
-                        elseif Key == "AimPart" then
-                            Option:SetValues(Configuration.AimPartDropdownValues)
-                            Option:SetValue(Configuration.AimPart)
-                        elseif Key == "SpinPart" then
-                            Option:SetValues(Configuration.SpinPartDropdownValues)
-                            Option:SetValue(Configuration.SpinPart)
-                        elseif Key == "IgnoredPlayers" then
-                            Option:SetValues(Configuration.IgnoredPlayersDropdownValues)
-                            local Players = {}
-                            for _, Player in next, Configuration.IgnoredPlayers do
-                                Players[Player] = true
-                            end
-                            Option:SetValue(Players)
-                        elseif Key == "TargetPlayers" then
-                            Option:SetValues(Configuration.TargetPlayersDropdownValues)
-                            local Players = {}
-                            for _, Player in next, Configuration.TargetPlayers do
-                                Players[Player] = true
-                            end
-                            Option:SetValue(Players)
+                end, function()
+                    Window:Dialog({
+                        Title = "Configuration Manager",
+                        Content = string.format("An Error occurred when loading the Configuration File %s.ttwizz", game.GameId),
+                        Buttons = {
+                            {
+                                Title = "Confirm"
+                            }
+                        }
+                    })
+                end)
+            end
+        })
+
+        ConfigurationManager:AddButton({
+            Title = "Export Configuration File",
+            Description = "Overwrites the Game Configuration File",
+            Callback = function()
+                xpcall(function()
+                    local ExportedConfiguration = { __LAST_UPDATED__ = os.date() }
+                    for Key, Value in next, Configuration do
+                        if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
+                            ExportedConfiguration[Key] = Fluent.Options[Key].Value
+                        elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
+                            ExportedConfiguration[Key] = ColorsHandler:PackColour(Value)
+                        else
+                            ExportedConfiguration[Key] = Value
                         end
                     end
-                end
-                Window:Dialog({
-                    Title = "Configuration Manager",
-                    Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully loaded!", game.GameId),
-                    Buttons = {
-                        {
-                            Title = "Confirm"
+                    ExportedConfiguration = HttpService:JSONEncode(ExportedConfiguration)
+                    getfenv().writefile(string.format("%s.ttwizz", game.GameId), ExportedConfiguration)
+                    Window:Dialog({
+                        Title = "Configuration Manager",
+                        Content = string.format("Configuration File %s.ttwizz has been successfully overwritten!", game.GameId),
+                        Buttons = {
+                            {
+                                Title = "Confirm"
+                            }
                         }
-                    }
-                })
-            else
-                Window:Dialog({
-                    Title = "Configuration Manager",
-                    Content = string.format("Configuration File %s.alwaysmesmerizingyou could not be found!", game.GameId),
-                    Buttons = {
-                        {
-                            Title = "Confirm"
+                    })
+                end, function()
+                    Window:Dialog({
+                        Title = "Configuration Manager",
+                        Content = string.format("An Error occurred when overwriting the Configuration File %s.ttwizz", game.GameId),
+                        Buttons = {
+                            {
+                                Title = "Confirm"
+                            }
                         }
-                    }
-                })
+                    })
+                end)
             end
-        end, function()
-            Window:Dialog({
-                Title = "Configuration Manager",
-                Content = string.format("An Error occurred when loading the Configuration File %s.alwaysmesmerizingyou", game.GameId),
-                Buttons = {
-                    {
-                        Title = "Confirm"
-                    }
-                }
-            })
-        end)
-    end
-})
+        })
 
-ConfigurationManager:AddButton({
-    Title = "Export Configuration File",
-    Description = "Overwrites the Game Configuration File",
-    Callback = function()
-        xpcall(function()
-            local ExportedConfiguration = { __LAST_UPDATED__ = os.date() }
-            for Key, Value in next, Configuration do
-                if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
-                    ExportedConfiguration[Key] = Fluent.Options[Key].Value
-                elseif Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
-                    ExportedConfiguration[Key] = ColorsHandler:PackColour(Value)
+        ConfigurationManager:AddButton({
+            Title = "Delete Configuration File",
+            Description = "Removes the Game Configuration File",
+            Callback = function()
+                if getfenv().isfile(string.format("%s.ttwizz", game.GameId)) then
+                    getfenv().delfile(string.format("%s.ttwizz", game.GameId))
+                    Window:Dialog({
+                        Title = "Configuration Manager",
+                        Content = string.format("Configuration File %s.ttwizz has been successfully removed!", game.GameId),
+                        Buttons = {
+                            {
+                                Title = "Confirm"
+                            }
+                        }
+                    })
                 else
-                    ExportedConfiguration[Key] = Value
+                    Window:Dialog({
+                        Title = "Configuration Manager",
+                        Content = string.format("Configuration File %s.ttwizz could not be found!", game.GameId),
+                        Buttons = {
+                            {
+                                Title = "Confirm"
+                            }
+                        }
+                    })
                 end
             end
-            ExportedConfiguration = HttpService:JSONEncode(ExportedConfiguration)
-            getfenv().writefile(string.format("%s.alwaysmesmerizingyou", game.GameId), ExportedConfiguration)
-            Window:Dialog({
-                Title = "Configuration Manager",
-                Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully overwritten!", game.GameId),
-                Buttons = {
-                    {
-                        Title = "Confirm"
-                    }
-                }
-            })
-        end, function()
-            Window:Dialog({
-                Title = "Configuration Manager",
-                Content = string.format("An Error occurred when overwriting the Configuration File %s.alwaysmesmerizingyou", game.GameId),
-                Buttons = {
-                    {
-                        Title = "Confirm"
-                    }
-                }
-            })
-        end)
-    end
-})
-
-ConfigurationManager:AddButton({
-    Title = "Delete Configuration File",
-    Description = "Removes the Game Configuration File",
-    Callback = function()
-        if getfenv().isfile(string.format("%s.alwaysmesmerizingyou", game.GameId)) then
-            getfenv().delfile(string.format("%s.alwaysmesmerizingyou", game.GameId))
-            Window:Dialog({
-                Title = "Configuration Manager",
-                Content = string.format("Configuration File %s.alwaysmesmerizingyou has been successfully removed!", game.GameId),
-                Buttons = {
-                    {
-                        Title = "Confirm"
-                    }
-                }
-            })
-        else
-            Window:Dialog({
-                Title = "Configuration Manager",
-                Content = string.format("Configuration File %s.alwaysmesmerizingyouz could not be found!", game.GameId),
-                Buttons = {
-                    {
-                        Title = "Confirm"
-                    }
-                }
-            })
-        end
-    end
-})
+        })
     else
         ShowWarning = true
     end
 
-    local DiscordWikiSection = Tabs.Settings:AddSection("Discord & Website")
+    local DiscordWebsiteSection = Tabs.Settings:AddSection("Discord & Website")
 
     if getfenv().setclipboard then
-        DiscordWikiSection:AddButton({
+        DiscordWebsiteSection:AddButton({
             Title = "Copy Invite Link",
             Description = "Paste it into the Browser Tab",
             Callback = function()
-                getfenv().setclipboard("https://discord.gg/uGxSYkyp66")
+                getfenv().setclipboard("https://twix.cyou/pix")
                 Window:Dialog({
-                    Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
+                    Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
                     Content = "Invite Link has been copied to the Clipboard!",
                     Buttons = {
                         {
@@ -1913,14 +1916,14 @@ ConfigurationManager:AddButton({
             end
         })
 
-        DiscordWikiSection:AddButton({
+        DiscordWebsiteSection:AddButton({
             Title = "Copy Website Link",
             Description = "Paste it into the Browser Tab",
             Callback = function()
-                getfenv().setclipboard("https://rivals-script.vercel.app/")
+                getfenv().setclipboard("https://soluna-script.vercel.app/")
                 Window:Dialog({
-                    Title = string.format(MonthlyLabels[os.date("*t").month], "Soluna"),
-                    Content = "Wiki Link has been copied to the Clipboard!",
+                    Title = string.format(MonthlyLabels[os.date("*t").month], " Soluna"),
+                    Content = "Website Link has been copied to the Clipboard!",
                     Buttons = {
                         {
                             Title = "Confirm"
@@ -1930,13 +1933,13 @@ ConfigurationManager:AddButton({
             end
         })
     else
-        DiscordWikiSection:AddParagraph({
-            Title = "https://discord.gg/uGxSYkyp66",
+        DiscordWebsiteSection:AddParagraph({
+            Title = "https://soluna-script.vercel.app/",
             Content = "Paste it into the Browser Tab"
         })
 
-        DiscordWikiSection:AddParagraph({
-            Title = "https://rivals-script.vercel.app/",
+        DiscordWebsiteSection:AddParagraph({
+            Title = "https://soluna-script.vercel.app/",
             Content = "Paste it into the Browser Tab"
         })
     end
@@ -1955,7 +1958,7 @@ ConfigurationManager:AddButton({
         elseif ShowWarning then
             Window:Dialog({
                 Title = "Warning",
-                Content = string.format("Your Software does not support all the Features of %s Free!", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+                Content = string.format("Your Software does not support all the Features of %s  FREE !", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
                 Buttons = {
                     {
                         Title = "Confirm"
@@ -1964,8 +1967,8 @@ ConfigurationManager:AddButton({
             })
         else
             Window:Dialog({
-                Title = string.format("%s Premium", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
-                Content = "Upgrade to unlock all Options – Contact @alwaysmesmerizingyou via Discord to buy",
+                Title = string.format("%s   PREMIUM  ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
+                Content = " Upgrade to unlock all Options  – Contact @ alwaysmesmerizingyou via Discord to buy",
                 Buttons = {
                     {
                         Title = "Confirm"
@@ -1979,15 +1982,15 @@ end
 local function Notify(Message)
     if Fluent and typeof(Message) == "string" then
         Fluent:Notify({
-            Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+            Title = string.format("%s  FREE ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
             Content = Message,
-            SubContent = "By @alwaysmesmerizingyou",
+            SubContent = "By @ alwaysmesmerizingyou",
             Duration = 1.5
         })
     end
 end
 
-Notify("Upgrade to unlock all Options")
+Notify(" Upgrade to unlock all Options ")
 
 local FieldsHandler = {}
 
@@ -2413,7 +2416,7 @@ function ESPLibrary:Initialize(_Character)
         if IsInViewport then
             self.ESPBox.Size = Vector2.new(2350 / HumanoidRootPartPosition.Z, TopPosition.Y - BottomPosition.Y)
             self.ESPBox.Position = Vector2.new(HumanoidRootPartPosition.X - self.ESPBox.Size.X / 2, HumanoidRootPartPosition.Y - self.ESPBox.Size.Y / 2)
-            self.NameESP.Text = Aiming and IsReady(Target) and self.Character == Target and string.format("@%s", self.Player.Name) or string.format("@%s", self.Player.Name)
+            self.NameESP.Text = Aiming and IsReady(Target) and self.Character == Target and string.format("🎯@%s🎯", self.Player.Name) or string.format("@%s", self.Player.Name)
             self.NameESP.Position = Vector2.new(HumanoidRootPartPosition.X, HumanoidRootPartPosition.Y + self.ESPBox.Size.Y / 2 - 25)
             self.HealthESP.Text = string.format("[%s%%]", MathHandler:Abbreviate(Humanoid.Health))
             self.HealthESP.Position = Vector2.new(HumanoidRootPartPosition.X, HeadPosition.Y)
@@ -2473,7 +2476,7 @@ function ESPLibrary:Visualize()
             self.ESPBox.Thickness = Configuration.ESPThickness
             self.ESPBox.Transparency = Configuration.ESPOpacity
             self.ESPBox.Filled = Configuration.ESPBoxFilled
-            self.NameESP.Text = Aiming and IsReady(Target) and self.Character == Target and string.format("@%s", self.Player.Name) or string.format("@%s", self.Player.Name)
+            self.NameESP.Text = Aiming and IsReady(Target) and self.Character == Target and string.format("🎯@%s🎯", self.Player.Name) or string.format("@%s", self.Player.Name)
             self.NameESP.Font = getfenv().Drawing.Fonts and getfenv().Drawing.Fonts[Configuration.NameESPFont]
             self.NameESP.Size = Configuration.NameESPSize
             self.NameESP.Transparency = Configuration.ESPOpacity
@@ -2628,9 +2631,7 @@ local OnTeleport; OnTeleport = Player.OnTeleport:Connect(function()
     if DEBUG or not Fluent or not getfenv().queue_on_teleport then
         OnTeleport:Disconnect()
     else
-getfenv().queue_on_teleport(function()
-    loadstring(game:HttpGet("https://discord.gg/uGxSYkyp66", true))()
-end)
+        getfenv().queue_on_teleport("getfenv().loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ttwizz/Open-Aimbot/master/source.lua\", true))()")
         OnTeleport:Disconnect()
     end
 end)
@@ -2732,5 +2733,3 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
         end
     end
 end)
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/soluna/refs/heads/main/src/api/tracker.lua",true))()
