@@ -37,8 +37,8 @@ local InterfaceManager = {}
 
 function InterfaceManager:ImportSettings()
     pcall(function()
-        if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile("UISettings.ttwizz") and getfenv().readfile("UISettings.ttwizz") then
-            for Key, Value in next, HttpService:JSONDecode(getfenv().readfile("UISettings.ttwizz")) do
+        if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile("UISettings.Soluna") and getfenv().readfile("UISettings.Soluna") then
+            for Key, Value in next, HttpService:JSONDecode(getfenv().readfile("UISettings.Soluna")) do
                 UISettings[Key] = Value
             end
         end
@@ -48,7 +48,7 @@ end
 function InterfaceManager:ExportSettings()
     pcall(function()
         if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().writefile then
-            getfenv().writefile("UISettings.ttwizz", HttpService:JSONEncode(UISettings))
+            getfenv().writefile("UISettings.Soluna", HttpService:JSONEncode(UISettings))
         end
     end)
 end
@@ -71,8 +71,8 @@ end
 local ImportedConfiguration = {}
 
 pcall(function()
-    if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile(string.format("%s.ttwizz", game.GameId)) and getfenv().readfile(string.format("%s.ttwizz", game.GameId)) and UISettings.AutoImport then
-        ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.ttwizz", game.GameId)))
+    if not DEBUG and getfenv().isfile and getfenv().readfile and getfenv().isfile(string.format("%s.Soluna", game.GameId)) and getfenv().readfile(string.format("%s.Soluna", game.GameId)) and UISettings.AutoImport then
+        ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.Soluna", game.GameId)))
         for Key, Value in next, ImportedConfiguration do
             if Key == "FoVColour" or Key == "NameESPOutlineColour" or Key == "ESPColour" then
                 ImportedConfiguration[Key] = ColorsHandler:UnpackColour(Value)
@@ -1745,8 +1745,8 @@ end
             Description = "Loads the Game Configuration File",
             Callback = function()
                 xpcall(function()
-                    if getfenv().isfile(string.format("%s.ttwizz", game.GameId)) and getfenv().readfile(string.format("%s.ttwizz", game.GameId)) then
-                        local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.ttwizz", game.GameId)))
+                    if getfenv().isfile(string.format("%s.Soluna", game.GameId)) and getfenv().readfile(string.format("%s.Soluna", game.GameId)) then
+                        local ImportedConfiguration = HttpService:JSONDecode(getfenv().readfile(string.format("%s.Soluna", game.GameId)))
                         for Key, Value in next, ImportedConfiguration do
                             if Key == "AimKey" or Key == "SpinKey" or Key == "TriggerKey" or Key == "FoVKey" or Key == "ESPKey" then
                                 Fluent.Options[Key]:SetValue(Value)
@@ -1792,7 +1792,7 @@ end
                         end
                         Window:Dialog({
                             Title = "Configuration Manager",
-                            Content = string.format("Configuration File %s.ttwizz has been successfully loaded!", game.GameId),
+                            Content = string.format("Configuration File %s.Soluna has been successfully loaded!", game.GameId),
                             Buttons = {
                                 {
                                     Title = "Confirm"
@@ -1802,7 +1802,7 @@ end
                     else
                         Window:Dialog({
                             Title = "Configuration Manager",
-                            Content = string.format("Configuration File %s.ttwizz could not be found!", game.GameId),
+                            Content = string.format("Configuration File %s.Soluna could not be found!", game.GameId),
                             Buttons = {
                                 {
                                     Title = "Confirm"
@@ -1813,7 +1813,7 @@ end
                 end, function()
                     Window:Dialog({
                         Title = "Configuration Manager",
-                        Content = string.format("An Error occurred when loading the Configuration File %s.ttwizz", game.GameId),
+                        Content = string.format("An Error occurred when loading the Configuration File %s.Soluna", game.GameId),
                         Buttons = {
                             {
                                 Title = "Confirm"
@@ -1840,10 +1840,10 @@ end
                         end
                     end
                     ExportedConfiguration = HttpService:JSONEncode(ExportedConfiguration)
-                    getfenv().writefile(string.format("%s.ttwizz", game.GameId), ExportedConfiguration)
+                    getfenv().writefile(string.format("%s.Soluna", game.GameId), ExportedConfiguration)
                     Window:Dialog({
                         Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.ttwizz has been successfully overwritten!", game.GameId),
+                        Content = string.format("Configuration File %s.Soluna has been successfully overwritten!", game.GameId),
                         Buttons = {
                             {
                                 Title = "Confirm"
@@ -1853,7 +1853,7 @@ end
                 end, function()
                     Window:Dialog({
                         Title = "Configuration Manager",
-                        Content = string.format("An Error occurred when overwriting the Configuration File %s.ttwizz", game.GameId),
+                        Content = string.format("An Error occurred when overwriting the Configuration File %s.Soluna", game.GameId),
                         Buttons = {
                             {
                                 Title = "Confirm"
@@ -1868,11 +1868,11 @@ end
             Title = "Delete Configuration File",
             Description = "Removes the Game Configuration File",
             Callback = function()
-                if getfenv().isfile(string.format("%s.ttwizz", game.GameId)) then
-                    getfenv().delfile(string.format("%s.ttwizz", game.GameId))
+                if getfenv().isfile(string.format("%s.Soluna", game.GameId)) then
+                    getfenv().delfile(string.format("%s.Soluna", game.GameId))
                     Window:Dialog({
                         Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.ttwizz has been successfully removed!", game.GameId),
+                        Content = string.format("Configuration File %s.Soluna has been successfully removed!", game.GameId),
                         Buttons = {
                             {
                                 Title = "Confirm"
@@ -1882,7 +1882,7 @@ end
                 else
                     Window:Dialog({
                         Title = "Configuration Manager",
-                        Content = string.format("Configuration File %s.ttwizz could not be found!", game.GameId),
+                        Content = string.format("Configuration File %s.Soluna could not be found!", game.GameId),
                         Buttons = {
                             {
                                 Title = "Confirm"
@@ -2631,7 +2631,7 @@ local OnTeleport; OnTeleport = Player.OnTeleport:Connect(function()
     if DEBUG or not Fluent or not getfenv().queue_on_teleport then
         OnTeleport:Disconnect()
     else
-        getfenv().queue_on_teleport("getfenv().loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ttwizz/Open-Aimbot/master/source.lua\", true))()")
+        getfenv().queue_on_teleport("getfenv().loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Soluna/Open-Aimbot/master/source.lua\", true))()")
         OnTeleport:Disconnect()
     end
 end)
