@@ -1034,6 +1034,412 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
     })
 
 if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
+    local BlatantTab = Window:AddTab({ Title = "Blatant", Icon = "skull" })
+
+    local GameService = game:GetService("Workspace")
+    local RunService = game:GetService("RunService")
+    local Players = game:GetService("Players")
+    local UserInputService = game:GetService("UserInputService")
+
+    local config = {
+        teleportUpdateRate = 0, 
+        dropdownUpdateInterval = 5, 
+        teleportDistanceX = 10,
+        teleportDistanceY = 5,
+        orbitSpeed = 0.05,
+        orbitAngle = 0,
+        orbitRadius = 10, 
+        orbitHeight = 5,   
+        orbitSmoothness = 0.2, 
+        targetCheckInterval = 0.5 
+    }
+
+    local state = {
+        teleportEnabled = false,
+        spinningEnabled = false,
+        targetEntityName = "",
+        lastUpdate = 0,
+        dropdownUpdateTimer = 0,
+        lastTargetCheck = 0,
+        currentPosition = Vector3.new(0, 0, 0),
+        isTargetDead = false,
+        keybindActive = false,
+        lastOrbitPosition = nil,
+        teleportConnection = nil,
+        localPlayer = Players.LocalPlayer,
+        entityNameMap = {} 
+    }
+
+    local function formatPlayerName(player)
+        local displayName = player.DisplayName or player.Name
+        local userName = player.Name
+
+        if displayName ~= userName then
+            return displayName .. " @" .. userName
+        else
+            return displayName
+        end
+    end
+
+    local function getOriginalUsername(formattedName)
+
+        if formattedName:find("@") then
+            return formattedName:match("@(.+)$")
+        else
+            return formattedName 
+        end
+    end
+
+    local function getEntityList()
+        local entityList = {}
+        state.entityNameMap = {} 
+
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= state.localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                local formattedName = formatPlayerName(player)
+                table.insert(entityList, formattedName)
+                state.entityNameMap[formattedName] = player.Name 
+            end
+        end
+
+        for _, entity in ipairs(GameService:GetChildren()) do
+            if entity:FindFirstChild("Humanoid") and not Players:GetPlayerFromCharacter(entity) then
+                table.insert(entityList, entity.Name)
+                state.entityNameMap[entity.Name] = entity.Name 
+            end
+        end
+
+        return entityList
+    end
+
+    local EntityDropdown = BlatantTab:AddDropdown("EntityDropdown", {
+        Title = "Choose Target",
+        Description = "Select an entity to teleport to or orbit",
+        Values = getEntityList(),
+        Default = "",
+        Callback = function(Value)
+
+            if state.entityNameMap[Value] then
+                state.targetEntityName = state.entityNameMap[Value]
+            else
+
+                state.targetEntityName = getOriginalUsername(Value)
+            end
+
+            state.lastOrbitPosition = nil 
+        end
+    })
+
+    local function findLocalCharacter()
+        if state.localPlayer and state.localPlayer.Character then
+            return state.localPlayer.Character
+        end
+
+        local camera = workspace.CurrentCamera
+        if camera and camera.CameraSubject then
+            if camera.CameraSubject:IsA("Humanoid") then
+                return camera.CameraSubject.Parent
+            elseif camera.CameraSubject:IsA("BasePart") then
+                return camera.CameraSubject.Parent
+            end
+        end
+
+        return nil
+    end
+
+    local function findTargetEntity()
+        if state.targetEntityName == "" then return nil end
+
+        local targetPlayer = Players:FindFirstChild(state.targetEntityName)
+        if targetPlayer and targetPlayer.Character then
+            return targetPlayer.Character
+        end
+
+        return GameService:FindFirstChild(state.targetEntityName)
+    end
+
+    local function isTargetDead()
+        local targetEntity = findTargetEntity()
+        if not targetEntity then return true end
+
+        local humanoid = targetEntity:FindFirstChild("Humanoid")
+        if not humanoid then return true end
+
+        return humanoid.Health <= 0
+    end
+
+    local function getPrimaryPart(entity)
+        if not entity then return nil end
+
+        local part = entity:FindFirstChild("HumanoidRootPart") or 
+                     entity:FindFirstChild("Torso") or
+                     entity:FindFirstChild("UpperTorso") or
+                     entity.PrimaryPart
+
+        if not part then
+            for _, child in ipairs(entity:GetChildren()) do
+                if child:IsA("BasePart") then
+                    part = child
+                    break
+                end
+            end
+        end
+
+        return part
+    end
+
+    local function teleportTo(targetPosition)
+        local character = findLocalCharacter()
+        if not character then return end
+
+        local primaryPart = getPrimaryPart(character)
+        if not primaryPart then return end
+
+        if not state.currentPosition or state.currentPosition == Vector3.new(0,0,0) then
+            state.currentPosition = primaryPart.Position
+        end
+
+        if state.spinningEnabled then
+
+            state.currentPosition = state.currentPosition:Lerp(targetPosition, 0.8)
+        else
+
+            state.currentPosition = state.currentPosition:Lerp(targetPosition, 0.5)
+        end
+
+        primaryPart.CFrame = CFrame.new(state.currentPosition, targetPosition + Vector3.new(0, 0, 0.001)) 
+
+        primaryPart.Velocity = Vector3.new(0, 0, 0)
+        primaryPart.RotVelocity = Vector3.new(0, 0, 0)
+    end
+
+    local function directTeleport()
+        local targetEntity = findTargetEntity()
+        if not targetEntity then return end
+
+        local targetPart = getPrimaryPart(targetEntity)
+        if not targetPart then return end
+
+        local targetPosition = targetPart.Position + Vector3.new(config.teleportDistanceX, config.teleportDistanceY, 0)
+
+        local character = findLocalCharacter()
+        if character then
+            local primaryPart = getPrimaryPart(character)
+            if primaryPart then
+                primaryPart.CFrame = CFrame.new(targetPosition, targetPart.Position)
+                state.currentPosition = targetPosition 
+            end
+        end
+    end
+
+    local function calculateOrbitPosition(targetPart)
+
+        local offsetX = math.cos(config.orbitAngle) * config.orbitRadius
+        local offsetZ = math.sin(config.orbitAngle) * config.orbitRadius
+
+        return targetPart.Position + Vector3.new(offsetX, config.orbitHeight, offsetZ)
+    end
+
+    local function toggleTeleportProcessing(enabled)
+
+        if state.teleportConnection then
+            state.teleportConnection:Disconnect()
+            state.teleportConnection = nil
+        end
+
+        if enabled then
+
+            state.teleportConnection = RunService.RenderStepped:Connect(function(deltaTime)
+
+                state.lastTargetCheck = state.lastTargetCheck + deltaTime
+                if state.lastTargetCheck >= config.targetCheckInterval then
+                    state.lastTargetCheck = 0
+                    state.isTargetDead = isTargetDead()
+                end
+
+                if state.isTargetDead then 
+
+                    local character = findLocalCharacter()
+                    if character and state.lastOrbitPosition then
+                        local primaryPart = getPrimaryPart(character)
+                        if primaryPart then
+
+                            local safePosition = state.lastOrbitPosition + Vector3.new(0, 5, 0)
+                            primaryPart.CFrame = CFrame.new(safePosition)
+                            state.currentPosition = safePosition
+                        end
+                    end
+                    return 
+                end
+
+                if not (state.teleportEnabled or state.spinningEnabled) then return end
+
+                local targetEntity = findTargetEntity()
+                if not targetEntity then return end
+
+                local targetPart = getPrimaryPart(targetEntity)
+                if not targetPart then return end
+
+                state.dropdownUpdateTimer = state.dropdownUpdateTimer + deltaTime
+                if state.dropdownUpdateTimer >= config.dropdownUpdateInterval then
+                    state.dropdownUpdateTimer = 0
+                    local values = getEntityList()
+                    if #values > 0 then
+                        EntityDropdown.Values = values
+                        EntityDropdown:BuildDropdownList()
+                    end
+                end
+
+                local targetPosition
+
+                if state.teleportEnabled and not state.spinningEnabled then
+                    targetPosition = targetPart.Position + Vector3.new(config.teleportDistanceX, config.teleportDistanceY, 0)
+                    teleportTo(targetPosition)
+                end
+
+                if state.spinningEnabled then
+
+                    config.orbitAngle = config.orbitAngle + (config.orbitSpeed * deltaTime * 60) 
+
+                    targetPosition = calculateOrbitPosition(targetPart)
+                    state.lastOrbitPosition = targetPosition 
+
+                    teleportTo(targetPosition)
+                end
+            end)
+        end
+    end
+
+    BlatantTab:AddButton({
+        Title = "Teleport to Entity",
+        Callback = directTeleport
+    })
+
+    local teleportToggle = BlatantTab:AddToggle("AutoTeleportEnabled", {
+        Title = "Enable Auto Teleport",
+        Default = false,
+        Callback = function(Value)
+            state.teleportEnabled = Value
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+    })
+
+    local orbitToggle = BlatantTab:AddToggle("OrbitAroundEntity", {
+        Title = "Orbit Around Entity",
+        Default = false,
+        Callback = function(Value)
+            state.spinningEnabled = Value
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+    })
+
+    BlatantTab:AddKeybind("AutoTeleportKeybind", {
+        Title = "Auto Teleport Keybind",
+        Description = "Press key to toggle Auto Teleport",
+        Default = "Z",
+        Mode = "Toggle",
+        Callback = function()
+            state.teleportEnabled = not state.teleportEnabled
+            teleportToggle:SetValue(state.teleportEnabled) 
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+    })
+
+    BlatantTab:AddKeybind("OrbitKeybind", {
+        Title = "Orbit Keybind",
+        Description = "Press key to toggle Orbit",
+        Default = "C", 
+        Mode = "Toggle",
+        Callback = function()
+            state.spinningEnabled = not state.spinningEnabled
+            orbitToggle:SetValue(state.spinningEnabled) 
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+    })
+
+    BlatantTab:AddSlider("TeleportDistanceX", {
+        Title = "Teleport Distance",
+        Default = 10,
+        Min = 1,
+        Max = 50,
+        Rounding = 1,
+        Callback = function(Value)
+            config.teleportDistanceX = Value
+            config.orbitRadius = Value 
+        end
+    })
+
+    BlatantTab:AddSlider("TeleportDistanceY", {
+        Title = "Teleport Height",
+        Default = 5,
+        Min = -10,
+        Max = 50,
+        Rounding = 1,
+        Callback = function(Value)
+            config.teleportDistanceY = Value
+            config.orbitHeight = Value 
+        end
+    })
+
+    BlatantTab:AddSlider("OrbitSpeed", {
+        Title = "Orbit Speed",
+        Default = 0.05,
+        Min = 0.01,
+        Max = 0.5,
+        Rounding = 2,
+        Callback = function(Value)
+            config.orbitSpeed = Value
+        end
+    })
+
+    BlatantTab:AddSlider("TeleportSmoothness", {
+        Title = "Movement Smoothness",
+        Description = "Lower = smoother, higher = faster response",
+        Default = 0.2,
+        Min = 0.05,
+        Max = 1,
+        Rounding = 2,
+        Callback = function(Value)
+            config.orbitSmoothness = Value
+        end
+    })
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end 
+
+        if input.KeyCode == Enum.KeyCode[BlatantTab:GetKeybind("AutoTeleportKeybind").Value] then
+            state.teleportEnabled = not state.teleportEnabled
+            teleportToggle:SetValue(state.teleportEnabled) 
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+
+        if input.KeyCode == Enum.KeyCode[BlatantTab:GetKeybind("OrbitKeybind").Value] then
+            state.spinningEnabled = not state.spinningEnabled
+            orbitToggle:SetValue(state.spinningEnabled) 
+            toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+        end
+    end)
+
+    toggleTeleportProcessing(state.teleportEnabled or state.spinningEnabled)
+
+    Players.PlayerAdded:Connect(function()
+        local values = getEntityList()
+        if #values > 0 then
+            EntityDropdown.Values = values
+            EntityDropdown:BuildDropdownList()
+        end
+    end)
+
+    Players.PlayerRemoving:Connect(function()
+        local values = getEntityList()
+        if #values > 0 then
+            EntityDropdown.Values = values
+            EntityDropdown:BuildDropdownList()
+        end
+    end)
+end
+
+if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     local Lighting = game:GetService("Lighting")
     Tabs.Player = Window:AddTab({ Title = "Lighting", Icon = "sun" })
 
