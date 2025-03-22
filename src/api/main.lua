@@ -1032,6 +1032,193 @@ AimbotSection:AddSlider("MaxTrackingDistance", {
         Title = string.format("%s   PREMIUM  ", string.format(MonthlyLabels[os.date("*t").month], " Soluna")),
         Content = " Upgrade to unlock all Options \nContact @ alwaysmesmerizingyou via Discord to buy"
     })
+
+if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
+    local Lighting = game:GetService("Lighting")
+    Tabs.Player = Window:AddTab({ Title = "Lighting", Icon = "sun" })
+
+    Tabs.Player:AddParagraph({
+        Title = string.format("%s Free", string.format(MonthlyLabels[os.date("*t").month], "Soluna")),
+        Content = "Soluna\nhttps://discord.gg/uGxSYkyp66"
+    })
+
+    local TimeControlEnabled = false
+    local SliderValue = Lighting.ClockTime
+    local ToggleTime = Tabs.Player:AddToggle("TimeControlToggle", {
+        Title = "Enable Time Control",
+        Default = false,
+        Callback = function(Value)
+            TimeControlEnabled = Value
+        end
+    })
+
+    local Slider = Tabs.Player:AddSlider("TimeSlider", {
+        Title = "Time of Day",
+        Min = 0,
+        Max = 24,
+        Default = Lighting.ClockTime,
+        Rounding = 1,
+        Callback = function(Value)
+            SliderValue = Value  
+            if TimeControlEnabled then
+                Lighting.ClockTime = SliderValue  
+            end
+        end
+    })
+
+    local ShadowsEnabled = true
+    local ToggleShadows = Tabs.Player:AddToggle("ShadowsToggle", {
+        Title = "Enable Shadows",
+        Default = true,
+        Callback = function(Value)
+            ShadowsEnabled = Value
+            Lighting.GlobalShadows = ShadowsEnabled  
+            Lighting.ShadowSoftness = ShadowsEnabled and 0.5 or 1  
+        end
+    })
+
+    local BrightnessValue = Lighting.Brightness
+    local SliderBrightness = Tabs.Player:AddSlider("BrightnessSlider", {
+        Title = "Brightness",
+        Min = 0,
+        Max = 2,
+        Default = Lighting.Brightness,
+        Rounding = 2,
+        Callback = function(Value)
+            BrightnessValue = Value
+            Lighting.Brightness = BrightnessValue
+        end
+    })
+
+    local AmbientColorEnabled = false
+    local SelectedColor = Lighting.Ambient
+    local RainbowModeEnabled = false
+    local RainbowSpeed = 1
+
+    local ToggleAmbient = Tabs.Player:AddToggle("AmbientToggle", {
+        Title = "Enable Color Tint",
+        Default = false,
+        Callback = function(Value)
+            AmbientColorEnabled = Value
+            if AmbientColorEnabled and not RainbowModeEnabled then
+                Lighting.Ambient = SelectedColor
+            else
+                Lighting.Ambient = Color3.fromRGB(127, 127, 127)
+            end
+        end
+    })
+
+    local ColorPicker = Tabs.Player:AddColorpicker("AmbientColorPicker", {
+        Title = "Game Tint Color",
+        Default = Lighting.Ambient,
+        Transparency = 0,
+        Callback = function(Value)
+            SelectedColor = Value
+            if AmbientColorEnabled and not RainbowModeEnabled then
+                Lighting.Ambient = SelectedColor
+            end
+        end
+    })
+
+    local ToggleRainbowMode = Tabs.Player:AddToggle("RainbowModeToggle", {
+        Title = "Enable Rainbow Mode",
+        Default = false,
+        Callback = function(Value)
+            RainbowModeEnabled = Value
+            if not RainbowModeEnabled then
+
+                if AmbientColorEnabled then
+                    Lighting.Ambient = SelectedColor
+                else
+                    Lighting.Ambient = Color3.fromRGB(127, 127, 127) 
+                end
+            end
+        end
+    })
+
+    local RainbowSpeedSlider = Tabs.Player:AddSlider("RainbowSpeedSlider", {
+        Title = "Rainbow Speed",
+        Min = 0.1,
+        Max = 5,
+        Default = 1,
+        Rounding = 1,
+        Callback = function(Value)
+            RainbowSpeed = Value
+        end
+    })
+
+    local OutdoorAmbientEnabled = false
+    local SelectedOutdoorColor = Lighting.OutdoorAmbient
+
+    local ToggleOutdoor = Tabs.Player:AddToggle("OutdoorAmbientToggle", {
+        Title = "Enable Outdoor Lighting",
+        Default = false,
+        Callback = function(Value)
+            OutdoorAmbientEnabled = Value
+            if OutdoorAmbientEnabled then
+                Lighting.OutdoorAmbient = SelectedOutdoorColor
+            else
+                Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127) 
+            end
+        end
+    })
+
+    local OutdoorColorPicker = Tabs.Player:AddColorpicker("OutdoorColorPicker", {
+        Title = "Outdoor Lighting Color",
+        Default = Lighting.OutdoorAmbient,
+        Transparency = 0,
+        Callback = function(Value)
+            SelectedOutdoorColor = Value
+            if OutdoorAmbientEnabled then
+                Lighting.OutdoorAmbient = SelectedOutdoorColor
+            end
+        end
+    })
+
+    local function loopSettings()
+        local rainbowStartTime = tick()
+
+        while true do
+            if TimeControlEnabled then
+                if Lighting.ClockTime ~= SliderValue then
+                    Lighting.ClockTime = SliderValue
+                end
+            end
+
+            if Lighting.GlobalShadows ~= ShadowsEnabled then
+                Lighting.GlobalShadows = ShadowsEnabled
+            end
+
+            if Lighting.ShadowSoftness ~= (ShadowsEnabled and 0.5 or 1) then
+                Lighting.ShadowSoftness = ShadowsEnabled and 0.5 or 1
+            end
+
+            if Lighting.Brightness ~= BrightnessValue then
+                Lighting.Brightness = BrightnessValue
+            end
+
+            if AmbientColorEnabled and not RainbowModeEnabled and Lighting.Ambient ~= SelectedColor then
+                Lighting.Ambient = SelectedColor
+            end
+
+            if RainbowModeEnabled then
+
+                local elapsedTime = (tick() - rainbowStartTime) * RainbowSpeed
+                local color = Color3.fromHSV(elapsedTime % 1, 1, 1)
+                Lighting.Ambient = color
+            end
+
+            if OutdoorAmbientEnabled and Lighting.OutdoorAmbient ~= SelectedOutdoorColor then
+                Lighting.OutdoorAmbient = SelectedOutdoorColor
+            end
+
+            wait(0.01)
+        end
+    end
+
+    spawn(loopSettings)
+end
+
 if DEBUG or (getfenv().Drawing and getfenv().Drawing.new) then
     Tabs.Player = Window:AddTab({ Title = "Player", Icon = "user" })
     Tabs.Player:AddParagraph({
