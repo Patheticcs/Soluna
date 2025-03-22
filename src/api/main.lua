@@ -247,7 +247,7 @@ end)
 
 do
     local Window = Fluent:CreateWindow({
-Title = string.format("", string.format(MonthlyLabels[os.date("*t").month], " Soluna"), #Status > 0 and Status or " FREE "),        SubTitle = "By @ alwaysmesmerizingyou",
+Title = string.format("Soluna", string.format(MonthlyLabels[os.date("*t").month], " Soluna"), #Status > 0 and Status or " FREE "),        SubTitle = "By @ alwaysmesmerizingyou",
         TabWidth = UISettings.TabWidth,
         Size = UDim2.fromOffset(table.unpack(UISettings.Size)),
         Theme = UISettings.Theme,
